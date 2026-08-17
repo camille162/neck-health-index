@@ -1,2 +1,2 @@
 # neck-health-index
-A non-medical, open-source index of authoritative cervical spine health content, plus a general-purpose exercise timer. Built with Vue 3. No medical advice.
+非医疗、开源、纯前端的颈椎健康权威内容索引工具，附带通用跟练计时器。不提供医疗建议。
