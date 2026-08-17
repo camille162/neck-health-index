@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #F9FAFB;
+  color: #1F2937;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #F9FAFB;
+  position: relative;
+  box-shadow: 0 0 1px rgba(0,0,0,0.05);
+}
+
+@layer components {
+  .page-container {
+    @apply min-h-screen pb-20;
+  }
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 p-4;
+  }
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-sm
+           active:opacity-80 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg font-medium text-sm
+           active:bg-gray-50 transition-colors;
+  }
+  .tag {
+    @apply inline-block px-2 py-0.5 rounded text-xs font-medium;
+  }
+}
