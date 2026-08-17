@@ -30,6 +30,9 @@ body {
   .page-container {
     @apply min-h-screen pb-20;
   }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
   .card {
     @apply bg-white rounded-xl border border-gray-200 p-4;
   }

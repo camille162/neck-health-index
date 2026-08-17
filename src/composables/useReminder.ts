@@ -1,5 +1,10 @@
-import { ref, onUnmounted } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+
+// 模块级单例：整个应用只有一个提醒定时器，
+// 无论 useReminder 在哪个组件中实例化都共享它
+let timerId: number | null = null
+let instanceCount = 0
 
 export function useReminder() {
   const userStore = useUserStore()
@@ -8,7 +13,7 @@ export function useReminder() {
     notificationSupported.value ? Notification.permission : 'denied'
   )
 
-  let timerId: number | null = null
+  instanceCount++
 
   function requestPermission(): Promise<boolean> {
     if (!notificationSupported.value) return Promise.resolve(false)
@@ -16,23 +21,6 @@ export function useReminder() {
       permission.value = result
       return result === 'granted'
     })
-  }
-
-  function start() {
-    stop()
-    if (!userStore.reminder_settings.enabled) return
-
-    const intervalMs = userStore.reminder_settings.interval_minutes * 60 * 1000
-    timerId = window.setInterval(() => {
-      notify()
-    }, intervalMs)
-  }
-
-  function stop() {
-    if (timerId !== null) {
-      clearInterval(timerId)
-      timerId = null
-    }
   }
 
   function notify() {
@@ -45,19 +33,45 @@ export function useReminder() {
     }
   }
 
+  function applySettings() {
+    if (timerId !== null) {
+      clearInterval(timerId)
+      timerId = null
+    }
+    const settings = userStore.reminder_settings
+    if (!settings.enabled) return
+    const intervalMs = Math.max(1, settings.interval_minutes) * 60 * 1000
+    timerId = window.setInterval(notify, intervalMs)
+  }
+
+  // 设置变化（含首次加载与本地存储恢复）时自动应用
+  watch(() => userStore.reminder_settings, applySettings, { deep: true, immediate: true })
+
+  onUnmounted(() => {
+    instanceCount--
+    if (instanceCount <= 0 && timerId !== null) {
+      clearInterval(timerId)
+      timerId = null
+    }
+  })
+
+  function start() {
+    applySettings()
+  }
+
+  function stop() {
+    if (timerId !== null) {
+      clearInterval(timerId)
+      timerId = null
+    }
+  }
+
   function updateSettings(enabled: boolean, interval: number) {
     userStore.updateReminderSettings({
       enabled,
       interval_minutes: interval
     })
-    if (enabled) {
-      start()
-    } else {
-      stop()
-    }
   }
-
-  onUnmounted(() => stop())
 
   return {
     notificationSupported,

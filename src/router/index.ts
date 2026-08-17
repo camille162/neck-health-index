@@ -63,6 +63,10 @@ const router = createRouter({
       path: '/privacy',
       name: 'privacy',
       component: () => import('@/views/PrivacyView.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
     }
   ],
   scrollBehavior() {

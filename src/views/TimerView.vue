@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore, localDateString } from '@/stores/userStore'
+import { useContentStore } from '@/stores/contentStore'
 import { useTimer, type TimerMode } from '@/composables/useTimer'
 import { SAFETY_TEXTS } from '@/utils/safety'
 import TimerDisplay from '@/components/TimerDisplay.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
+const contentStore = useContentStore()
 
 const {
   mode, exerciseDuration, restDuration, rounds,
   phase, currentRound, isRunning,
   totalMinutes, exceededLimit, phaseLabel, displayTime,
-  start, pause, resume, stop, reset, getCompletedRounds
+  start, pause, resume, stop, reset, getCompletedRounds, getElapsedMs
 } = useTimer()
 
 const showStartConfirm = ref(false)
@@ -21,8 +23,7 @@ const showStartConfirm = ref(false)
 const fromContentId = computed(() => route.query.from as string | undefined)
 const fromContentTitle = computed(() => {
   if (!fromContentId.value) return ''
-  const c = userStore.history.find(h => h.content_id === fromContentId.value)
-  return c ? fromContentId.value : ''
+  return contentStore.getContentById(fromContentId.value)?.title ?? ''
 })
 
 const exerciseOptions = Array.from({ length: 11 }, (_, i) => 10 + i * 5)
@@ -38,30 +39,62 @@ function confirmStart() {
   start()
 }
 
-function handleStop() {
-  stop()
+// 会话结束（自然完成或手动结束）时自动保存一次记录
+const savedRef = ref(false)
+
+watch(phase, (p) => {
+  if (p === 'idle') {
+    savedRef.value = false
+    return
+  }
+  if (p === 'done' && !savedRef.value) {
+    savedRef.value = true
+    saveRecord()
+  }
+}, { flush: 'sync' })
+
+function saveRecord() {
+  const endedAt = new Date().toISOString()
   if (mode.value === 'interval') {
     const completed = getCompletedRounds()
     if (completed > 0) {
+      const activeSeconds = completed * exerciseDuration.value
+      const restSeconds = Math.max(0, completed - 1) * restDuration.value
       userStore.addTimerRecord({
         mode: mode.value,
         exercise_duration: exerciseDuration.value,
         rest_duration: restDuration.value,
         rounds: rounds.value,
         completed_rounds: completed,
-        total_minutes: Math.round(
-          completed * (exerciseDuration.value + restDuration.value) / 60
-        ),
-        started_at: new Date(Date.now() - completed * (exerciseDuration.value + restDuration.value) * 1000).toISOString(),
-        ended_at: new Date().toISOString()
+        total_minutes: Math.max(1, Math.round((activeSeconds + restSeconds) / 60)),
+        started_at: new Date(Date.now() - (activeSeconds + restSeconds) * 1000).toISOString(),
+        ended_at: endedAt
+      })
+    }
+  } else {
+    const elapsedMs = getElapsedMs()
+    if (elapsedMs >= 1000) {
+      userStore.addTimerRecord({
+        mode: 'free',
+        exercise_duration: 0,
+        rest_duration: 0,
+        rounds: 0,
+        completed_rounds: 0,
+        total_minutes: Math.max(1, Math.round(elapsedMs / 60000)),
+        started_at: new Date(Date.now() - elapsedMs).toISOString(),
+        ended_at: endedAt
       })
     }
   }
+}
+
+function handleStop() {
+  stop()
   reset()
 }
 
 const todayRecords = computed(() => {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = localDateString()
   return userStore.timer_records.filter(r => r.date === today)
 })
 

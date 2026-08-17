@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { useReminder } from '@/composables/useReminder'
 import BottomNav from '@/components/BottomNav.vue'
 import SafetyNotice from '@/components/SafetyNotice.vue'
 
-const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+
+// 久坐提醒在应用根组件持有，跨页面持续生效
+useReminder()
 
 const showSafetyNotice = ref(false)
 

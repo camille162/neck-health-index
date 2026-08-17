@@ -33,6 +33,13 @@ export interface UserData {
   safety_version: string
 }
 
+export function localDateString(d = new Date()): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 const STORAGE_KEY = 'neck_care_user_data'
 const SAFETY_VERSION = 'v2.0'
 
@@ -51,7 +58,7 @@ const defaultData: UserData = {
 }
 
 export const useUserStore = defineStore('user', {
-  state: (): UserData => ({ ...defaultData }),
+  state: (): UserData => structuredClone(defaultData),
 
   getters: {
     safetyConfirmed: (state) => state.safety_confirmed && state.safety_version === SAFETY_VERSION,
@@ -79,7 +86,11 @@ export const useUserStore = defineStore('user', {
     },
 
     save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.$state))
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.$state))
+      } catch {
+        // 存储不可用（隐私模式/配额满）时静默降级，不影响交互
+      }
     },
 
     confirmSafety() {
@@ -114,7 +125,7 @@ export const useUserStore = defineStore('user', {
     },
 
     addTimerRecord(record: Omit<TimerRecord, 'date'>) {
-      const date = new Date().toISOString().slice(0, 10)
+      const date = localDateString()
       this.timer_records.unshift({ ...record, date })
       if (this.timer_records.length > 200) {
         this.timer_records = this.timer_records.slice(0, 200)

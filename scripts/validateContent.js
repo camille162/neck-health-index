@@ -10,7 +10,7 @@ const REQUIRED_FIELDS = [
   'source_name', 'source_type', 'source_url', 'embed_allowed',
   'description', 'published_date', 'collected_date', 'view_count',
   'is_featured', 'language', 'review_status', 'reviewed_by',
-  'review_date', 'risk_level'
+  'review_date', 'risk_level', 'embed_url', 'cover_url', 'risk_note'
 ]
 
 const VALID_CONTENT_TYPES = ['video', 'article', 'infographic', 'diet']

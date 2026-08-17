@@ -15,7 +15,7 @@ defineProps<{
       :class="{
         'border-primary bg-primary-light': phase === 'exercise',
         'border-blue-400 bg-blue-50': phase === 'rest',
-        'border-gray-300 bg-gray-50': phase === 'idle' || phase === 'done',
+        'border-gray-300 bg-gray-50': phase === 'idle',
         'border-green-400 bg-green-50': phase === 'done'
       }"
     >

@@ -11,17 +11,18 @@ export function useTimer() {
 
   const phase = ref<TimerPhase>('idle')
   const currentRound = ref(0)
+  const completedRounds = ref(0)
   const remainingMs = ref(0)
   const isRunning = ref(false)
 
   let startTimestamp = 0
   let phaseEndTimestamp = 0
-  let rafId: number | null = null
   let tickInterval: number | null = null
 
   const totalSeconds = computed(() => {
     if (mode.value === 'free') return 0
-    return rounds.value * (exerciseDuration.value + restDuration.value)
+    // 最后一组结束后无休息，实际时长 = 组数*运动 + (组数-1)*休息
+    return rounds.value * exerciseDuration.value + Math.max(0, rounds.value - 1) * restDuration.value
   })
 
   const totalMinutes = computed(() => Math.round(totalSeconds.value / 60))
@@ -56,6 +57,13 @@ export function useTimer() {
     }
   }
 
+  function finish() {
+    phase.value = 'done'
+    isRunning.value = false
+    remainingMs.value = 0
+    clearTimers()
+  }
+
   function advancePhase() {
     if (mode.value === 'free') {
       stop()
@@ -63,15 +71,13 @@ export function useTimer() {
     }
 
     if (phase.value === 'exercise') {
+      completedRounds.value = currentRound.value
       if (currentRound.value < rounds.value) {
         phase.value = 'rest'
         phaseEndTimestamp = Date.now() + restDuration.value * 1000
         remainingMs.value = restDuration.value * 1000
       } else {
-        phase.value = 'done'
-        isRunning.value = false
-        remainingMs.value = 0
-        clearTimers()
+        finish()
       }
     } else if (phase.value === 'rest') {
       currentRound.value++
@@ -80,10 +86,7 @@ export function useTimer() {
         phaseEndTimestamp = Date.now() + exerciseDuration.value * 1000
         remainingMs.value = exerciseDuration.value * 1000
       } else {
-        phase.value = 'done'
-        isRunning.value = false
-        remainingMs.value = 0
-        clearTimers()
+        finish()
       }
     }
   }
@@ -97,6 +100,7 @@ export function useTimer() {
       remainingMs.value = 3600 * 1000
     } else {
       currentRound.value = 1
+      completedRounds.value = 0
       phase.value = 'exercise'
       isRunning.value = true
       startTimestamp = Date.now()
@@ -130,8 +134,10 @@ export function useTimer() {
   function reset() {
     phase.value = 'idle'
     currentRound.value = 0
+    completedRounds.value = 0
     remainingMs.value = 0
     isRunning.value = false
+    startTimestamp = 0
     clearTimers()
   }
 
@@ -140,24 +146,26 @@ export function useTimer() {
       clearInterval(tickInterval)
       tickInterval = null
     }
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId)
-      rafId = null
-    }
   }
+
+  let wasRunningBeforeHide = false
 
   function handleVisibilityChange() {
     if (document.hidden) {
+      wasRunningBeforeHide = isRunning.value
       pause()
-    } else {
-      if (phase.value !== 'idle' && phase.value !== 'done' && !isRunning.value) {
-        const now = Date.now()
-        if (now >= phaseEndTimestamp) {
-          advancePhase()
-        } else {
-          remainingMs.value = phaseEndTimestamp - now
-          resume()
-        }
+    } else if (wasRunningBeforeHide && phase.value !== 'idle' && phase.value !== 'done') {
+      const now = Date.now()
+      if (now >= phaseEndTimestamp) {
+        // 隐藏期间阶段已到期：推进一个阶段（隐藏期间不追赶时间）
+        advancePhase()
+      } else {
+        remainingMs.value = phaseEndTimestamp - now
+      }
+      // advancePhase 可能直接结束会话，因此运行时仍需检查（显式断言跳过 TS 静态收窄）
+      if ((phase.value as TimerPhase) !== 'idle' && (phase.value as TimerPhase) !== 'done' && !isRunning.value) {
+        isRunning.value = true
+        tickInterval = window.setInterval(tick, 200)
       }
     }
   }
@@ -169,9 +177,12 @@ export function useTimer() {
   })
 
   function getCompletedRounds(): number {
-    if (phase.value === 'done') return rounds.value
-    if (phase.value === 'rest') return currentRound.value - 1
-    return currentRound.value - 1
+    return completedRounds.value
+  }
+
+  function getElapsedMs(): number {
+    if (startTimestamp === 0) return 0
+    return Date.now() - startTimestamp
   }
 
   return {
@@ -193,6 +204,7 @@ export function useTimer() {
     resume,
     stop,
     reset,
-    getCompletedRounds
+    getCompletedRounds,
+    getElapsedMs
   }
 }

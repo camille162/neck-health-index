@@ -108,7 +108,8 @@ function goTimer() {
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-gray-500">审核状态</span>
-          <span class="text-green-600">已按收录标准检查</span>
+          <span v-if="content.review_status === 'approved'" class="text-green-600">已按收录标准检查</span>
+          <span v-else class="text-amber-600">尚未通过审核</span>
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-gray-500">原始链接</span>
