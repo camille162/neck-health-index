@@ -1,0 +1,4 @@
+{
+  "_说明": "配置要抓取的官方来源。kind: youtube=YouTube频道 / bilibili=B站UP主(经RSSHub) / rss=任意RSS地址。示例见 sources.config.example.json。配置后运行 npm run fetch 或等 GitHub Actions 定时抓取。",
+  "sources": []
+}

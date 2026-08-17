@@ -56,6 +56,22 @@ npm run validate
 
 校验脚本（`scripts/validateContent.js`）会检查：必填字段、重复 ID、非法枚举值、**占位链接（example.com 等）**、占位来源名称、已批准内容是否有审核信息，以及标题/描述中是否出现医疗禁忌词（诊断、治疗、根治、"适合你"等）。**发布前请确保校验通过。**
 
+### 数据更新（半自动：抓取 + 人工审核）
+
+内容数据支持从官方来源半自动抓取更新，**始终保留人工审核关**：
+
+1. **配置来源**：编辑 `scripts/sources.config.json`（示例见 `sources.config.example.json`），支持三种来源：
+   - `youtube`：YouTube 官方频道 RSS（填 `channel_id`）
+   - `bilibili`：B 站 UP 主（填 `uid`，经 RSSHub 中转，可用环境变量 `RSSHUB_BASE` 指定自建实例）
+   - `rss`：任意 RSS 地址（填 `feed_url`）
+2. **抓取**：手动运行 `npm run fetch`，或等 GitHub Actions 每周定时抓取（`.github/workflows/update-candidates.yml`）自动开 PR。抓取结果以 `review_status: "pending"` 追加进 `contents.json`，**不会出现在应用内**，已存在的链接自动去重跳过。
+3. **人工审核**（合并 PR 前逐条进行）：
+   - 确认链接真实、内容与主题相关；
+   - 合格条目：`review_status` 改为 `approved`，填写 `reviewed_by` / `review_date`；
+   - 含动作演示的条目：`risk_level` 改为 `action_demo` 并填写 `risk_note`；
+   - 不合格条目：改为 `rejected`；
+4. **校验**：`npm run validate` 通过后再合并（禁忌词与占位链接检查同样作用于候选条目，抓取的标题如触发禁忌词需人工修改或拒绝）。
+
 ---
 
 ## 免责声明

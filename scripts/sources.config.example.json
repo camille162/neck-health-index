@@ -1,0 +1,31 @@
+{
+  "sources": [
+    {
+      "id": "xiangya_rehab",
+      "name": "湘雅医院康复科",
+      "source_type": "hospital",
+      "kind": "bilibili",
+      "uid": "在此填写B站UP主UID",
+      "content_type": "video",
+      "max_items": 5
+    },
+    {
+      "id": "nhc_website",
+      "name": "国家卫健委",
+      "source_type": "government",
+      "kind": "rss",
+      "feed_url": "在此填写官方RSS地址",
+      "content_type": "article",
+      "max_items": 5
+    },
+    {
+      "id": "sports_administration",
+      "name": "国家体育总局",
+      "source_type": "government",
+      "kind": "youtube",
+      "channel_id": "在此填写YouTube频道ID",
+      "content_type": "video",
+      "max_items": 5
+    }
+  ]
+}
