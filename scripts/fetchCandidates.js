@@ -1,10 +1,12 @@
-// 内容候选抓取脚本（半自动更新）
+// 渠道白名单自动收录脚本
 //
-// 从 scripts/sources.config.json 配置的官方来源抓取最新内容，
-// 以 review_status = 'pending' 追加到 src/data/contents.json（不覆盖现有数据，
-// 已存在的链接自动跳过）。候选条目不会出现在应用内，人工审核后才能上架：
-// 将 review_status 改为 'approved' 并填写 reviewed_by / review_date，
-// 最后运行 npm run validate 确认通过。
+// 从 scripts/sources.config.json 配置的【经核实的官方渠道】抓取最新内容，
+// 追加到 src/data/contents.json（不覆盖现有数据，已存在的链接自动跳过）。
+//
+// 信任模型：信任建立在"渠道已核实为官方账号"这一层，而非逐条内容审核。
+// 配置来源时须通过 channel_url 核实账号真实性（如 B 站蓝V认证）。
+// auto_approve（默认开启）时条目直接以 approved 收录，
+// 仅做关键词安全过滤（禁忌词，与 validateContent.js 保持一致）作为自动化兜底。
 //
 // 用法:
 //   node scripts/fetchCandidates.js                # 正常抓取并写入
@@ -22,6 +24,13 @@ const DATA_PATH = path.join(ROOT, 'src', 'data', 'contents.json')
 
 const VALID_SOURCE_TYPES = ['hospital', 'society', 'government', 'university', 'organization']
 const VALID_CONTENT_TYPES = ['video', 'article', 'infographic', 'diet']
+const VALID_RISK_LEVEL = ['educational', 'action_demo']
+
+// 关键词安全过滤（与 scripts/validateContent.js 保持一致）
+const FORBIDDEN_TERMS = [
+  '颈型', '神经根型', '脊髓型', '椎动脉型', '交感型',
+  '诊断', '治疗', '适合你', '推荐给你', '精选推荐', '根治'
+]
 
 const args = process.argv.slice(2)
 const outPath = args.includes('--out') ? args[args.indexOf('--out') + 1] : DATA_PATH
@@ -123,6 +132,7 @@ function normalizeDescription(source, item) {
 }
 
 function buildCandidate(source, item, existing) {
+  const autoApprove = source.auto_approve !== false
   if (existing.ids.has(`cand_${source.id}_${hashCode(item.link)}`)) return null
   if (existing.urls.has(item.link)) return null
   const now = new Date()
@@ -146,11 +156,13 @@ function buildCandidate(source, item, existing) {
     view_count: 0,
     is_featured: false,
     language: 'zh',
-    review_status: 'pending',
-    reviewed_by: '',
-    review_date: '',
-    risk_level: 'educational',
-    risk_note: null
+    // 渠道白名单模式：auto_approve（默认开启）时直接 approved，
+    // 信任建立在"渠道已核实为官方账号"，而非逐条内容审核
+    review_status: autoApprove ? 'approved' : 'pending',
+    reviewed_by: autoApprove ? `渠道白名单自动收录（${source.name}）` : '',
+    review_date: autoApprove ? collected : '',
+    risk_level: source.default_risk_level || 'educational',
+    risk_note: source.default_risk_note || null
   }
 }
 
@@ -183,6 +195,11 @@ async function main() {
       console.error(`[跳过] ${source.id}: content_type 不合法: ${ct}`)
       continue
     }
+    const rl = source.default_risk_level || 'educational'
+    if (!VALID_RISK_LEVEL.includes(rl)) {
+      console.error(`[跳过] ${source.id}: default_risk_level 不合法: ${rl}`)
+      continue
+    }
     try {
       const url = feedUrlFor(source)
       console.log(`抓取: ${source.name} <- ${url}`)
@@ -190,6 +207,11 @@ async function main() {
       const items = parseFeed(xml)
       console.log(`  解析到 ${items.length} 条，取前 ${source.max_items || 5} 条`)
       for (const item of items.slice(0, source.max_items || 5)) {
+        const text = (item.title + ' ' + (item.description || ''))
+        if (FORBIDDEN_TERMS.some(t => text.includes(t))) {
+          console.log(`  x [关键词过滤] ${item.title}`)
+          continue
+        }
         const candidate = buildCandidate(source, item, existing)
         if (candidate) {
           data.contents.push(candidate)
@@ -206,7 +228,7 @@ async function main() {
     }
   }
 
-  console.log(`\n共新增 ${added} 条候选（pending 状态，需人工审核）。`)
+  console.log(`\n共新增 ${added} 条内容（渠道白名单自动收录）。`)
   if (dryRun) {
     console.log('dry-run：不写入文件。')
     return

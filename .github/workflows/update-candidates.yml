@@ -1,14 +1,13 @@
-name: Update content candidates
+name: Auto-sync whitelisted channel content
 
 on:
   schedule:
-    # 每周一 04:37（北京时间）
+    # 每周一 04:37（北京时间）——如需更频繁，修改此行 cron 即可
     - cron: '37 20 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   fetch:
@@ -21,19 +20,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run fetch
-      - name: Open PR if there are new candidates
-        uses: peter-evans/create-pull-request@v6
-        with:
-          commit-message: 'chore: 抓取新的内容候选'
-          title: '内容候选更新（待人工审核）'
-          body: |
-            抓取脚本从配置的官方来源生成了新的候选条目（review_status = pending）。
-
-            合并前请逐条审核：
-            1. 确认来源链接真实、内容与主题相关；
-            2. 将合格的条目 review_status 改为 approved，并填写 reviewed_by / review_date；
-            3. 动作演示类内容把 risk_level 改为 action_demo 并填写 risk_note；
-            4. 不合格的条目改为 rejected；
-            5. 本地运行 `npm run validate` 确认通过。
-          branch: candidates-update
-          delete-branch: false
+      - name: Commit and push if new content
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet src/data/contents.json; then
+            echo "无新增内容，跳过提交。"
+          else
+            git add src/data/contents.json
+            git commit -m "chore: 白名单渠道内容自动同步 $(date -u +%Y-%m-%d)"
+            git push
+          fi

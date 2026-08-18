@@ -1,12 +1,15 @@
 {
   "sources": [
     {
-      "id": "xiangya_rehab",
-      "name": "湘雅医院康复科",
+      "id": "west_china_hospital",
+      "name": "四川大学华西医院",
       "source_type": "hospital",
       "kind": "bilibili",
-      "uid": "在此填写B站UP主UID",
+      "uid": "在此填写B站UP主UID（打开 channel_url 后，地址栏 space.bilibili.com/ 后面的数字）",
+      "channel_url": "https://space.bilibili.com/（核实：官方蓝V认证）",
       "content_type": "video",
+      "default_risk_level": "action_demo",
+      "default_risk_note": "医院官方康复科普内容，含动作演示，请根据自身情况在专业人员指导下练习",
       "max_items": 5
     },
     {
@@ -14,7 +17,8 @@
       "name": "国家卫健委",
       "source_type": "government",
       "kind": "rss",
-      "feed_url": "在此填写官方RSS地址",
+      "feed_url": "在此填写官方RSS地址（官网无RSS时可留空并删除本条目）",
+      "channel_url": "https://www.nhc.gov.cn/",
       "content_type": "article",
       "max_items": 5
     },
@@ -24,6 +28,7 @@
       "source_type": "government",
       "kind": "youtube",
       "channel_id": "在此填写YouTube频道ID",
+      "channel_url": "在此填写频道主页链接（核实为官方频道）",
       "content_type": "video",
       "max_items": 5
     }

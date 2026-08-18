@@ -1,4 +1,4 @@
 {
-  "_说明": "配置要抓取的官方来源。kind: youtube=YouTube频道 / bilibili=B站UP主(经RSSHub) / rss=任意RSS地址。示例见 sources.config.example.json。配置后运行 npm run fetch 或等 GitHub Actions 定时抓取。",
+  "_说明": "渠道白名单：配置【经核实的官方渠道】后自动收录其新内容。核实方法：打开 channel_url，确认是官方认证账号（如B站蓝V/官网链接），再把 UID/频道ID 填进来。kind: youtube=YouTube频道 / bilibili=B站UP主(经RSSHub) / rss=任意RSS。auto_approve 默认开启（直接上架）；default_risk_level 选 action_demo 表示该渠道以动作演示为主。示例见 sources.config.example.json。",
   "sources": []
 }

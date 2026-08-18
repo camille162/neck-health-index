@@ -56,21 +56,17 @@ npm run validate
 
 校验脚本（`scripts/validateContent.js`）会检查：必填字段、重复 ID、非法枚举值、**占位链接（example.com 等）**、占位来源名称、已批准内容是否有审核信息，以及标题/描述中是否出现医疗禁忌词（诊断、治疗、根治、"适合你"等）。**发布前请确保校验通过。**
 
-### 数据更新（半自动：抓取 + 人工审核）
+### 数据更新（渠道白名单自动收录）
 
-内容数据支持从官方来源半自动抓取更新，**始终保留人工审核关**：
+**信任模型：信任建立在"渠道"而非"单条内容"。** 收录前一次性核实渠道是官方账号（B 站蓝V / 官网公示 / YouTube 官方频道），核实后该渠道的新内容自动收录，**无需逐条人工审核**（自动收录会在 `reviewed_by` 字段留痕）。
 
-1. **配置来源**：编辑 `scripts/sources.config.json`（示例见 `sources.config.example.json`），支持三种来源：
-   - `youtube`：YouTube 官方频道 RSS（填 `channel_id`）
-   - `bilibili`：B 站 UP 主（填 `uid`，经 RSSHub 中转，可用环境变量 `RSSHUB_BASE` 指定自建实例）
-   - `rss`：任意 RSS 地址（填 `feed_url`）
-2. **抓取**：手动运行 `npm run fetch`，或等 GitHub Actions 每周定时抓取（`.github/workflows/update-candidates.yml`）自动开 PR。抓取结果以 `review_status: "pending"` 追加进 `contents.json`，**不会出现在应用内**，已存在的链接自动去重跳过。
-3. **人工审核**（合并 PR 前逐条进行）：
-   - 确认链接真实、内容与主题相关；
-   - 合格条目：`review_status` 改为 `approved`，填写 `reviewed_by` / `review_date`；
-   - 含动作演示的条目：`risk_level` 改为 `action_demo` 并填写 `risk_note`；
-   - 不合格条目：改为 `rejected`；
-4. **校验**：`npm run validate` 通过后再合并（禁忌词与占位链接检查同样作用于候选条目，抓取的标题如触发禁忌词需人工修改或拒绝）。
+1. **核实并配置渠道**（一次性操作，每条渠道约 2 分钟）：
+   - 打开渠道主页（B 站空间 / 官网 / YouTube 频道），确认官方认证标识；
+   - 把 UID / 频道 ID / RSS 地址填进 `scripts/sources.config.json`（示例见 `sources.config.example.json`），并填写 `channel_url` 作为核实依据；
+   - 渠道类型：`bilibili`（经 RSSHub，可用环境变量 `RSSHUB_BASE` 指定自建实例）、`youtube`（官方频道 RSS）、`rss`（任意 RSS）；
+   - 按渠道性质设置 `default_risk_level`（以动作演示为主的康复类渠道建议 `action_demo` + 通用 `default_risk_note`）。
+2. **自动更新**：GitHub Actions 每周一自动抓取新内容并直接提交（`.github/workflows/update-candidates.yml`），触发自动部署，全程无需人工介入；本地也可随时运行 `npm run fetch` 手动同步。
+3. **自动化安全兜底**：抓取时对标题/描述做禁忌词过滤（与校验脚本同清单），命中即跳过；`npm run validate` 会拦截占位链接等数据问题。
 
 ---
 
