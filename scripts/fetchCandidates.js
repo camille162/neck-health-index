@@ -15,6 +15,7 @@
 
 import fs from 'fs'
 import path from 'path'
+import crypto from 'node:crypto'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -109,6 +110,81 @@ async function fetchText(url) {
   return res.text()
 }
 
+// ---------- B站官方 API 直连（bilibili_api 类型，无需 RSSHub） ----------
+
+const BILI_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Referer': 'https://www.bilibili.com/'
+}
+
+// wbi 签名（算法见 bilibili-API-collect 社区文档）
+const MIXIN_KEY_ENC_TAB = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11, 36, 20, 34, 44, 52]
+
+function getMixinKey(orig) {
+  return MIXIN_KEY_ENC_TAB.map(n => orig[n]).join('').slice(0, 32)
+}
+
+function md5(s) {
+  return crypto.createHash('md5').update(s).digest('hex')
+}
+
+async function getWbiMixinKey() {
+  const res = await fetch('https://api.bilibili.com/x/web-interface/nav', {
+    headers: BILI_HEADERS,
+    signal: AbortSignal.timeout(15000)
+  })
+  const j = await res.json()
+  const img = j?.data?.wbi_img?.img_url?.split('/').pop()?.split('.')[0]
+  const sub = j?.data?.wbi_img?.sub_url?.split('/').pop()?.split('.')[0]
+  if (!img || !sub) throw new Error('无法获取 B 站 wbi 密钥')
+  return getMixinKey(img + sub)
+}
+
+function signWbi(params, mixinKey) {
+  const wts = Math.round(Date.now() / 1000)
+  const all = { ...params, wts }
+  const query = Object.keys(all).sort().map(key => {
+    const value = String(all[key]).replace(/[!'()*]/g, '')
+    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+  }).join('&')
+  return `${query}&w_rid=${md5(query + mixinKey)}`
+}
+
+async function fetchBilibiliItems(uid) {
+  // 先获取 buvid3 浏览器指纹 cookie（降低风控概率）
+  let cookie = ''
+  try {
+    const r0 = await fetch('https://www.bilibili.com/', {
+      headers: BILI_HEADERS,
+      signal: AbortSignal.timeout(10000)
+    })
+    const sc = r0.headers.get('set-cookie') || ''
+    const buvid3 = (sc.match(/buvid3=([^;]+)/) || [])[1]
+    if (buvid3) cookie = 'buvid3=' + buvid3
+  } catch {
+    // cookie 获取失败不影响主流程
+  }
+  const mixinKey = await getWbiMixinKey()
+  const signed = signWbi({ mid: uid, ps: '30', pn: '1', order: 'pubdate' }, mixinKey)
+  const url = `https://api.bilibili.com/x/space/wbi/arc/search?${signed}`
+  const headers = { ...BILI_HEADERS, ...(cookie ? { Cookie: cookie } : {}) }
+  let j = await (await fetch(url, { headers, signal: AbortSignal.timeout(20000) })).json()
+  if (j.code === -799) {
+    // 限流：等待 3 秒重试一次
+    await new Promise(r => setTimeout(r, 3000))
+    j = await (await fetch(url, { headers, signal: AbortSignal.timeout(20000) })).json()
+  }
+  if (j.code !== 0) throw new Error(`B站接口返回 code ${j.code}: ${j.message}`)
+  const list = j?.data?.list?.vlist || []
+  return list.map(v => ({
+    title: v.title,
+    link: `https://www.bilibili.com/video/${v.bvid}`,
+    published: v.created ? new Date(v.created * 1000).toISOString() : '',
+    thumbnail: v.pic || '',
+    description: v.description || ''
+  }))
+}
+
 function feedUrlFor(source) {
   if (source.kind === 'youtube') {
     if (!source.channel_id) throw new Error(`缺少 channel_id`)
@@ -201,10 +277,25 @@ async function main() {
       continue
     }
     try {
-      const url = feedUrlFor(source)
-      console.log(`抓取: ${source.name} <- ${url}`)
-      const xml = await fetchText(url)
-      const items = parseFeed(xml)
+      let items
+      if (source.kind === 'bilibili_api') {
+        if (!source.uid) throw new Error(`缺少 uid（B站UP主UID）`)
+        console.log(`抓取: ${source.name} <- B站API uid=${source.uid}`)
+        try {
+          items = await fetchBilibiliItems(source.uid)
+        } catch (e) {
+          // 直连失败时回退 RSSHub 中转（海外服务器/风控场景）
+          console.log(`  直连API失败（${e.message}），尝试 RSSHub 中转...`)
+          const base = process.env.RSSHUB_BASE || 'https://rsshub.app'
+          const xml = await fetchText(`${base}/bilibili/user/video/${source.uid}`)
+          items = parseFeed(xml)
+        }
+      } else {
+        const url = feedUrlFor(source)
+        console.log(`抓取: ${source.name} <- ${url}`)
+        const xml = await fetchText(url)
+        items = parseFeed(xml)
+      }
       const limit = source.max_items || 5
       console.log(`  解析到 ${items.length} 条，最多收录 ${limit} 条`)
       // 先做禁忌词与相关度过滤，再取前 N 条（避免最新几条不相关时漏掉后面的相关内容）
