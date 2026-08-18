@@ -105,7 +105,8 @@ npm run validate
 
 1. 安装 [Node.js](https://nodejs.org/zh-cn)（LTS 版本即可）；
 2. 双击 `install.bat` —— 自动检查环境并安装依赖；
-3. 以后每次双击 `start.bat` —— 自动启动并打开浏览器。
+3. 以后每次双击 `start.bat` —— 自动启动并打开浏览器；
+4. 双击 `fetch.bat` —— 从白名单渠道抓取最新内容（同步到 `src/data/contents.json`，提交推送后上线）。
 
 > 关闭 `start.bat` 的黑色窗口即停止应用。若再次双击后浏览器打开的不是预期页面，请先关闭所有旧窗口再启动。
 
@@ -135,6 +136,7 @@ npm run preview  # 预览构建产物
 neck-health-index/
 ├── install.bat                # Windows 一键安装依赖
 ├── start.bat                  # Windows 一键启动
+├── fetch.bat                  # Windows 一键抓取白名单渠道内容
 ├── index.html                 # 入口 HTML
 ├── vite.config.ts             # Vite 配置（base: './'，支持相对路径部署）
 ├── tsconfig.json              # 应用代码 TS 配置
