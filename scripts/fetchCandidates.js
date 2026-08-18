@@ -111,6 +111,59 @@ async function fetchText(url, timeoutMs = 30000) {
   return res.text()
 }
 
+// ---------- PubMed 学术文献（pubmed 类型，NCBI 官方 API） ----------
+
+const MONTHS = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' }
+
+function normalizePubDate(raw) {
+  // 形如 "2026 Aug 1" / "2026 Aug" / "2026"
+  if (!raw) return ''
+  const m = raw.match(/^(\d{4})(?:\s+([A-Za-z]{3})(?:\s+(\d{1,2}))?)?/)
+  if (!m) return ''
+  let out = m[1]
+  if (m[2] && MONTHS[m[2]]) {
+    out += '-' + MONTHS[m[2]]
+    if (m[3]) out += '-' + String(m[3]).padStart(2, '0')
+  }
+  return out
+}
+
+async function fetchPubmedItems(source) {
+  const base = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils'
+  const queries = source.queries || []
+  if (queries.length === 0) throw new Error(`缺少 queries（检索式列表）`)
+  const per = source.max_per_query || 5
+  const items = []
+  for (const q of queries) {
+    const sUrl = `${base}/esearch.fcgi?db=pubmed&term=${encodeURIComponent(q)}&retmax=${per}&retmode=json&sort=pub_date`
+    const s = await (await fetch(sUrl, { signal: AbortSignal.timeout(25000) })).json()
+    const ids = s?.esearchresult?.idlist || []
+    if (ids.length === 0) continue
+    const mUrl = `${base}/esummary.fcgi?db=pubmed&id=${ids.join(',')}&retmode=json`
+    const m = await (await fetch(mUrl, { signal: AbortSignal.timeout(25000) })).json()
+    const result = m?.result || {}
+    for (const id of ids) {
+      const r = result[id]
+      if (!r?.title) continue
+      const authors = (r.authors || []).slice(0, 3).map(a => a.name).join(', ')
+      items.push({
+        title: r.title.replace(/\s+/g, ' ').slice(0, 200),
+        link: `https://pubmed.ncbi.nlm.nih.gov/${id}/`,
+        published: normalizePubDate(r.pubdate),
+        thumbnail: '',
+        description: [
+          r.fulljournalname || 'PubMed 文献',
+          r.source ? `（${r.source}）` : '',
+          authors ? `作者：${authors}${(r.authors || []).length > 3 ? ' 等' : ''}` : ''
+        ].join(' ')
+      })
+    }
+    // NCBI 无 API key 限速 3 req/s，礼貌间隔
+    await new Promise(r => setTimeout(r, 1200))
+  }
+  return items
+}
+
 // ---------- B站官方 API 直连（bilibili_api 类型，无需 RSSHub） ----------
 
 const BILI_HEADERS = {
@@ -291,7 +344,10 @@ async function main() {
     }
     try {
       let items
-      if (source.kind === 'bilibili_api') {
+      if (source.kind === 'pubmed') {
+        console.log(`抓取: ${source.name} <- PubMed（${(source.queries || []).length} 个检索式）`)
+        items = await fetchPubmedItems(source)
+      } else if (source.kind === 'bilibili_api') {
         if (!source.uid) throw new Error(`缺少 uid（B站UP主UID）`)
         console.log(`抓取: ${source.name} <- B站API uid=${source.uid}`)
         try {

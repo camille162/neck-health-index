@@ -1,6 +1,23 @@
 {
-  "_说明": "渠道白名单：仅收录【经核实的官方/认证渠道】的内容。B站渠道默认直连官方API（bilibili_api，无需RSSHub）；如遇风控可改用 bilibili 类型经 RSSHub 中转。keywords 为相关性过滤。",
+  "_说明": "渠道白名单：B站渠道直连官方API（bilibili_api），PubMed 渠道走 NCBI 官方API（pubmed，queries 为检索式）。keywords 为相关性过滤。",
   "sources": [
+    {
+      "id": "pubmed_nlm",
+      "name": "PubMed 学术文献（美国国家医学图书馆）",
+      "source_type": "government",
+      "kind": "pubmed",
+      "queries": [
+        "neck pain exercise therapy systematic review",
+        "cervical spine rehabilitation exercise",
+        "chronic nonspecific neck pain physiotherapy",
+        "scapular dyskinesis exercise",
+        "core stability training chronic low back pain",
+        "posture correction exercise musculoskeletal"
+      ],
+      "max_per_query": 5,
+      "content_type": "article",
+      "default_risk_level": "educational"
+    },
     {
       "id": "west_china_hospital",
       "name": "四川大学华西医院",
@@ -52,7 +69,7 @@
         "运动",
         "跑步"
       ],
-      "max_items": 5
+      "max_items": 10
     },
     {
       "id": "nhc_health_china",
@@ -85,7 +102,7 @@
         "晨跑",
         "夜跑"
       ],
-      "max_items": 5
+      "max_items": 10
     },
     {
       "id": "dr_xiao_rehab",
@@ -130,7 +147,7 @@
         "驼背",
         "肩背"
       ],
-      "max_items": 5
+      "max_items": 10
     }
   ]
 }
