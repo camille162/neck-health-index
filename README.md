@@ -110,6 +110,18 @@ npm run validate
 
 > 关闭 `start.bat` 的黑色窗口即停止应用。若再次双击后浏览器打开的不是预期页面，请先关闭所有旧窗口再启动。
 
+## 安装到手机（PWA，像 App 一样使用）
+
+本项目是 PWA（渐进式网页应用），无需应用商店，手机浏览器打开即可"安装"到主屏幕：
+
+1. 手机浏览器打开线上地址（如 `https://camille162.github.io/neck-health-index/`）；
+2. **安卓（Chrome / Edge 等）**：点浏览器右上角菜单 `⋮` → **安装应用 / 添加到主屏幕**；
+3. **iPhone（Safari）**：点底部**分享**按钮（方框+箭头）→ 向下滑找到 **添加到主屏幕** → 点"添加"；
+4. 主屏幕出现"颈椎健康索引"图标，之后点图标即可全屏打开，像原生 App 一样。
+
+- 内容更新**自动生效**：每次打开都会联网获取最新数据；网络不好时也能用上次缓存的内容打开（离线可用）；
+- 图标文件在 `public/icons/`，想换图标可运行 `node scripts/generate-icons.js` 重新生成或直接替换 PNG 文件。
+
 ## 手动安装与开发
 
 ```bash
@@ -142,9 +154,14 @@ neck-health-index/
 ├── tsconfig.json              # 应用代码 TS 配置
 ├── tsconfig.node.json         # 构建脚本 TS 配置
 ├── scripts/
-│   └── validateContent.js     # 内容数据自动校验
+│   ├── validateContent.js     # 内容数据自动校验
+│   ├── fetchCandidates.js     # 白名单渠道抓取（--probe 探针模式）
+│   └── generate-icons.js      # PWA 图标生成（零依赖纯 Node PNG 编码）
 ├── public/
-│   └── favicon.svg
+│   ├── favicon.svg
+│   ├── manifest.webmanifest   # PWA 清单（名称/图标/主题色）
+│   ├── sw.js                  # Service Worker（离线缓存）
+│   └── icons/                 # 180/192/512 PNG 图标
 ├── src/
 │   ├── main.ts                # 应用入口
 │   ├── App.vue                # 根组件（含安全须知弹窗与底部导航）
@@ -174,6 +191,7 @@ neck-health-index/
 - Vue Router 4（hash 模式）
 - Pinia
 - Tailwind CSS
+- PWA（可安装到主屏幕、离线缓存，Service Worker 手写零依赖）
 - 零后端（静态 JSON + localStorage）
 
 ## 许可证
