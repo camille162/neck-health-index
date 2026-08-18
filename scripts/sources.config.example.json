@@ -10,6 +10,7 @@
       "content_type": "video",
       "default_risk_level": "action_demo",
       "default_risk_note": "医院官方康复科普内容，含动作演示，请根据自身情况在专业人员指导下练习",
+      "keywords": ["颈", "肩", "背", "脊柱", "康复", "姿势"],
       "max_items": 5
     },
     {

@@ -22,7 +22,7 @@ const ROOT = path.join(__dirname, '..')
 const CONFIG_PATH = path.join(__dirname, 'sources.config.json')
 const DATA_PATH = path.join(ROOT, 'src', 'data', 'contents.json')
 
-const VALID_SOURCE_TYPES = ['hospital', 'society', 'government', 'university', 'organization']
+const VALID_SOURCE_TYPES = ['hospital', 'society', 'government', 'university', 'organization', 'expert']
 const VALID_CONTENT_TYPES = ['video', 'article', 'infographic', 'diet']
 const VALID_RISK_LEVEL = ['educational', 'action_demo']
 
@@ -211,6 +211,13 @@ async function main() {
         if (FORBIDDEN_TERMS.some(t => text.includes(t))) {
           console.log(`  x [关键词过滤] ${item.title}`)
           continue
+        }
+        // 渠道相关度过滤：配置了 keywords 时，仅收录标题命中关键词的内容
+        if (Array.isArray(source.keywords) && source.keywords.length > 0) {
+          if (!source.keywords.some(k => item.title.includes(k))) {
+            console.log(`  - [与主题无关，跳过] ${item.title}`)
+            continue
+          }
         }
         const candidate = buildCandidate(source, item, existing)
         if (candidate) {

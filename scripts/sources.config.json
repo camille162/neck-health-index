@@ -1,4 +1,41 @@
 {
-  "_说明": "渠道白名单：配置【经核实的官方渠道】后自动收录其新内容。核实方法：打开 channel_url，确认是官方认证账号（如B站蓝V/官网链接），再把 UID/频道ID 填进来。kind: youtube=YouTube频道 / bilibili=B站UP主(经RSSHub) / rss=任意RSS。auto_approve 默认开启（直接上架）；default_risk_level 选 action_demo 表示该渠道以动作演示为主。示例见 sources.config.example.json。",
-  "sources": []
+  "_说明": "渠道白名单：仅收录【经核实的官方/认证渠道】的内容。渠道需已核实：B站蓝V/医生黄V认证，channel_url 为核实依据。keywords 为相关性过滤（标题命中任一关键词才收录）；default_risk_level 选 action_demo 适用于以动作演示为主的康复渠道。抓取经 RSSHub 中转（公共实例偶有限流，可设环境变量 RSSHUB_BASE 指向自建实例）。",
+  "sources": [
+    {
+      "id": "west_china_hospital",
+      "name": "四川大学华西医院",
+      "source_type": "hospital",
+      "kind": "bilibili",
+      "uid": "419504234",
+      "channel_url": "https://space.bilibili.com/419504234",
+      "content_type": "video",
+      "default_risk_level": "educational",
+      "keywords": ["颈", "肩", "背", "脊柱", "康复", "姿势"],
+      "max_items": 5
+    },
+    {
+      "id": "nhc_health_china",
+      "name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "kind": "bilibili",
+      "uid": "210954454",
+      "channel_url": "https://space.bilibili.com/210954454",
+      "content_type": "video",
+      "default_risk_level": "educational",
+      "keywords": ["颈椎", "颈", "脊柱", "康复"],
+      "max_items": 5
+    },
+    {
+      "id": "dr_xiao_rehab",
+      "name": "肖博士健康科普",
+      "source_type": "expert",
+      "kind": "bilibili",
+      "uid": "588997563",
+      "channel_url": "https://space.bilibili.com/588997563",
+      "content_type": "video",
+      "default_risk_level": "educational",
+      "keywords": ["颈", "肩", "背", "脊柱", "康复", "姿势"],
+      "max_items": 5
+    }
+  ]
 }

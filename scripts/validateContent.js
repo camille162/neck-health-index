@@ -16,7 +16,7 @@ const REQUIRED_FIELDS = [
 const VALID_CONTENT_TYPES = ['video', 'article', 'infographic', 'diet']
 const VALID_REVIEW_STATUS = ['pending', 'approved', 'rejected', 'removed']
 const VALID_RISK_LEVEL = ['educational', 'action_demo']
-const VALID_SOURCE_TYPES = ['hospital', 'society', 'government', 'university', 'organization']
+const VALID_SOURCE_TYPES = ['hospital', 'society', 'government', 'university', 'organization', 'expert']
 
 const FORBIDDEN_TERMS = [
   '颈型', '神经根型', '脊髓型', '椎动脉型', '交感型',
