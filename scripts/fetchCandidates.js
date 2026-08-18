@@ -36,6 +36,7 @@ const FORBIDDEN_TERMS = [
 const args = process.argv.slice(2)
 const outPath = args.includes('--out') ? args[args.indexOf('--out') + 1] : DATA_PATH
 const dryRun = args.includes('--dry-run')
+const probe = args.includes('--probe')
 
 // ---------- 极简 XML 解析（零依赖，仅提取字段；候选仍需人工审核） ----------
 
@@ -164,25 +165,37 @@ async function fetchBilibiliItems(uid) {
   } catch {
     // cookie 获取失败不影响主流程
   }
-  const mixinKey = await getWbiMixinKey()
-  const signed = signWbi({ mid: uid, ps: '30', pn: '1', order: 'pubdate' }, mixinKey)
-  const url = `https://api.bilibili.com/x/space/wbi/arc/search?${signed}`
   const headers = { ...BILI_HEADERS, ...(cookie ? { Cookie: cookie } : {}) }
-  let j = await (await fetch(url, { headers, signal: AbortSignal.timeout(20000) })).json()
-  if (j.code === -799) {
-    // 限流：等待 3 秒重试一次
-    await new Promise(r => setTimeout(r, 3000))
-    j = await (await fetch(url, { headers, signal: AbortSignal.timeout(20000) })).json()
+
+  const mapVlist = (j) => {
+    if (j.code !== 0) throw new Error(`B站接口返回 code ${j.code}: ${j.message}`)
+    const list = j?.data?.list?.vlist || []
+    return list.map(v => ({
+      title: v.title,
+      link: `https://www.bilibili.com/video/${v.bvid}`,
+      published: v.created ? new Date(v.created * 1000).toISOString() : '',
+      thumbnail: v.pic || '',
+      description: v.description || ''
+    }))
   }
-  if (j.code !== 0) throw new Error(`B站接口返回 code ${j.code}: ${j.message}`)
-  const list = j?.data?.list?.vlist || []
-  return list.map(v => ({
-    title: v.title,
-    link: `https://www.bilibili.com/video/${v.bvid}`,
-    published: v.created ? new Date(v.created * 1000).toISOString() : '',
-    thumbnail: v.pic || '',
-    description: v.description || ''
-  }))
+
+  // 尝试 1：wbi 签名接口
+  try {
+    const mixinKey = await getWbiMixinKey()
+    const signed = signWbi({ mid: uid, ps: '30', pn: '1', order: 'pubdate' }, mixinKey)
+    const j = await (await fetch(`https://api.bilibili.com/x/space/wbi/arc/search?${signed}`, {
+      headers, signal: AbortSignal.timeout(20000)
+    })).json()
+    return mapVlist(j)
+  } catch (e1) {
+    // 尝试 2：非签名接口（等待 8 秒避免触发限流）
+    console.log(`  wbi 接口失败（${e1.message}），8 秒后尝试普通接口...`)
+    await new Promise(r => setTimeout(r, 8000))
+    const j = await (await fetch(`https://api.bilibili.com/x/space/arc/search?mid=${uid}&ps=30&pn=1&order=pubdate`, {
+      headers, signal: AbortSignal.timeout(20000)
+    })).json()
+    return mapVlist(j)
+  }
 }
 
 function feedUrlFor(source) {
@@ -284,17 +297,35 @@ async function main() {
         try {
           items = await fetchBilibiliItems(source.uid)
         } catch (e) {
-          // 直连失败时回退 RSSHub 中转（海外服务器/风控场景）
+          // 直连失败时回退 RSSHub 中转（依次尝试多个公共实例）
           console.log(`  直连API失败（${e.message}），尝试 RSSHub 中转...`)
-          const base = process.env.RSSHUB_BASE || 'https://rsshub.app'
-          const xml = await fetchText(`${base}/bilibili/user/video/${source.uid}`)
-          items = parseFeed(xml)
+          const bases = process.env.RSSHUB_BASE
+            ? [process.env.RSSHUB_BASE]
+            : ['https://rsshub.app', 'https://rsshub.rssforever.com', 'https://rsshub.pseudoyu.com', 'https://hub.slarker.me']
+          let fetched = false
+          for (const base of bases) {
+            try {
+              const xml = await fetchText(`${base}/bilibili/user/video/${source.uid}`)
+              items = parseFeed(xml)
+              fetched = true
+              console.log(`  RSSHub 中转成功: ${base}`)
+              break
+            } catch (e2) {
+              console.log(`  RSSHub ${base} 失败: ${e2.message}`)
+            }
+          }
+          if (!fetched) throw new Error('直连与全部 RSSHub 实例均失败')
         }
       } else {
         const url = feedUrlFor(source)
         console.log(`抓取: ${source.name} <- ${url}`)
         const xml = await fetchText(url)
         items = parseFeed(xml)
+      }
+      if (probe) {
+        console.log(`  [探针] ${items.length} 条标题：`)
+        items.slice(0, 30).forEach((it, i) => console.log(`    ${i + 1}. ${it.title}`))
+        continue
       }
       const limit = source.max_items || 5
       console.log(`  解析到 ${items.length} 条，最多收录 ${limit} 条`)
@@ -331,11 +362,13 @@ async function main() {
     } catch (e) {
       console.error(`[错误] ${source.name}: ${e.message}`)
     }
+    // 渠道之间间隔 4 秒，避免触发 B 站限流
+    await new Promise(r => setTimeout(r, 4000))
   }
 
   console.log(`\n共新增 ${added} 条内容（渠道白名单自动收录）。`)
-  if (dryRun) {
-    console.log('dry-run：不写入文件。')
+  if (dryRun || probe) {
+    console.log('dry-run/probe：不写入文件。')
     return
   }
   fs.writeFileSync(outPath, JSON.stringify(data, null, 2) + '\n', 'utf-8')
