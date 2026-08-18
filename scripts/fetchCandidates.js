@@ -102,10 +102,10 @@ function hashCode(s) {
   return (h >>> 0).toString(36).slice(0, 8)
 }
 
-async function fetchText(url) {
+async function fetchText(url, timeoutMs = 30000) {
   const res = await fetch(url, {
     headers: { 'User-Agent': 'Mozilla/5.0 (neck-care-index content fetcher)' },
-    signal: AbortSignal.timeout(30000)
+    signal: AbortSignal.timeout(timeoutMs)
   })
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`)
   return res.text()
@@ -305,7 +305,8 @@ async function main() {
           let fetched = false
           for (const base of bases) {
             try {
-              const xml = await fetchText(`${base}/bilibili/user/video/${source.uid}`)
+              // 快速失败（10 秒），避免不可达实例拖慢整轮
+              const xml = await fetchText(`${base}/bilibili/user/video/${source.uid}`, 10000)
               items = parseFeed(xml)
               fetched = true
               console.log(`  RSSHub 中转成功: ${base}`)

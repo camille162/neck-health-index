@@ -1,5 +1,90 @@
 {
   "version": "2.0.0",
   "last_updated": "2026-08-18",
-  "contents": []
+  "contents": [
+    {
+      "id": "cand_nhc_health_china_nztng4",
+      "title": "健康省省通 | 跟练版来啦！一条毛巾教你练出“少女背”",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1cAu96VEgs",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i1.hdslb.com/bfs/archive/985bc39ed2549d0ee552942b17358dbf37eb2ed1.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：健康省省通 | 跟练版来啦！一条毛巾教你练出“少女背”）",
+      "published_date": "2026-08-11",
+      "collected_date": "2026-08-18",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-08-18",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_1uvzt9r",
+      "title": "晨跑与夜跑哪个更减脂？",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1dKu46xEwD",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i1.hdslb.com/bfs/archive/b831f29faba2e6ab63a79f5a6c7426eb72e90a4d.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：晨跑与夜跑哪个更减脂？）",
+      "published_date": "2026-08-09",
+      "collected_date": "2026-08-18",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-08-18",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_1b9l0d",
+      "title": "如何估算身体活动量和能量消耗?",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1vTu46REua",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i2.hdslb.com/bfs/archive/bad92b5e38a472dfd7187f659a7e8b46636d516e.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：如何估算身体活动量和能量消耗?）",
+      "published_date": "2026-08-09",
+      "collected_date": "2026-08-18",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-08-18",
+      "risk_level": "educational",
+      "risk_note": null
+    }
+  ]
 }
