@@ -205,8 +205,11 @@ async function main() {
       console.log(`抓取: ${source.name} <- ${url}`)
       const xml = await fetchText(url)
       const items = parseFeed(xml)
-      console.log(`  解析到 ${items.length} 条，取前 ${source.max_items || 5} 条`)
-      for (const item of items.slice(0, source.max_items || 5)) {
+      const limit = source.max_items || 5
+      console.log(`  解析到 ${items.length} 条，最多收录 ${limit} 条`)
+      // 先做禁忌词与相关度过滤，再取前 N 条（避免最新几条不相关时漏掉后面的相关内容）
+      const accepted = []
+      for (const item of items) {
         const text = (item.title + ' ' + (item.description || ''))
         if (FORBIDDEN_TERMS.some(t => text.includes(t))) {
           console.log(`  x [关键词过滤] ${item.title}`)
@@ -215,10 +218,14 @@ async function main() {
         // 渠道相关度过滤：配置了 keywords 时，仅收录标题命中关键词的内容
         if (Array.isArray(source.keywords) && source.keywords.length > 0) {
           if (!source.keywords.some(k => item.title.includes(k))) {
-            console.log(`  - [与主题无关，跳过] ${item.title}`)
             continue
           }
         }
+        accepted.push(item)
+        if (accepted.length >= limit) break
+      }
+      console.log(`  相关度过滤后命中 ${accepted.length} 条`)
+      for (const item of accepted) {
         const candidate = buildCandidate(source, item, existing)
         if (candidate) {
           data.contents.push(candidate)
