@@ -225,6 +225,118 @@
       "review_date": "2026-08-18",
       "risk_level": "educational",
       "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_286gku",
+      "title": "“低头族”如何保护颈椎与脊柱?",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1Pz4968ELA",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i2.hdslb.com/bfs/archive/ccd9829be942c7317b2e4670308fd3d0ff6c36e7.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：“低头族”如何保护颈椎与脊柱?）",
+      "published_date": "2026-09-01",
+      "collected_date": "2026-09-01",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-09-01",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_wed6o5",
+      "title": "书包重，怎样背才更护脊？",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1Vw4R6yEPM",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i2.hdslb.com/bfs/archive/9786247f55d5016d478c9aae1a4d84e698a4750f.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：书包重，怎样背才更护脊？）",
+      "published_date": "2026-08-29",
+      "collected_date": "2026-09-01",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-09-01",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_1vx60nh",
+      "title": "孩子含胸驼背该如何科学矫正？",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1LJh56yEEv",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i0.hdslb.com/bfs/archive/a3118b98e177aba07f5b26a8949f6d93c89ddf0f.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：孩子含胸驼背该如何科学矫正？）",
+      "published_date": "2026-08-28",
+      "collected_date": "2026-09-01",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-09-01",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_1xip35k",
+      "title": "一拳一尺一寸正确读写姿势",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1y58q6pEw4",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i0.hdslb.com/bfs/archive/724b75c7a879bc2239868bf7ef6ae7b81a3fb234.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：一拳一尺一寸正确读写姿势）",
+      "published_date": "2026-08-25",
+      "collected_date": "2026-09-01",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-09-01",
+      "risk_level": "educational",
+      "risk_note": null
     }
   ]
 }
