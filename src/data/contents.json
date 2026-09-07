@@ -337,6 +337,62 @@
       "review_date": "2026-09-01",
       "risk_level": "educational",
       "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_17lu1hb",
+      "title": "枕头和床垫怎么选，对脊柱更友好?",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1Mit86MEBn",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i0.hdslb.com/bfs/archive/c9a998c6f314f5a074bdb49eb1c8d9b88108f63d.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：枕头和床垫怎么选，对脊柱更友好?）",
+      "published_date": "2026-09-02",
+      "collected_date": "2026-09-07",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-09-07",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_nhc_health_china_1jgzml1",
+      "title": "哪些小动作可以帮助脊柱减负?",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "健康中国（国家卫健委）",
+      "source_type": "government",
+      "source_url": "https://www.bilibili.com/video/BV1uit86uE2t",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i2.hdslb.com/bfs/archive/88a335385f6d92c342420341e803a1c1c0854654.jpg",
+      "description": "健康中国（国家卫健委） 发布的内容（标题：哪些小动作可以帮助脊柱减负?）",
+      "published_date": "2026-09-02",
+      "collected_date": "2026-09-07",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（健康中国（国家卫健委））",
+      "review_date": "2026-09-07",
+      "risk_level": "educational",
+      "risk_note": null
     }
   ]
 }
