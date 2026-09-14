@@ -393,6 +393,34 @@
       "review_date": "2026-09-07",
       "risk_level": "educational",
       "risk_note": null
+    },
+    {
+      "id": "cand_dr_xiao_rehab_1goe8dq",
+      "title": "久坐腰痛的一套穴位按摩方法",
+      "content_type": "video",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "肖博士健康科普",
+      "source_type": "expert",
+      "source_url": "https://www.bilibili.com/video/BV1zwWoeGEgB",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "http://i2.hdslb.com/bfs/archive/2f7298ca560fe24317a762187f4e96b60c3115a5.jpg",
+      "description": "-",
+      "published_date": "2024-08-24",
+      "collected_date": "2026-09-14",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（肖博士健康科普）",
+      "review_date": "2026-09-14",
+      "risk_level": "educational",
+      "risk_note": null
     }
   ]
 }
