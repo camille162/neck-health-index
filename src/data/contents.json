@@ -421,6 +421,34 @@
       "review_date": "2026-09-14",
       "risk_level": "educational",
       "risk_note": null
+    },
+    {
+      "id": "cand_pubmed_nlm_fs4ix",
+      "title": "Is Exercise Effective at Reducing Pain Catastrophizing in People with Chronic Non-Specific Spinal Pain? A Systematic Rev",
+      "content_type": "article",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "PubMed 学术文献（美国国家医学图书馆）",
+      "source_type": "government",
+      "source_url": "https://pubmed.ncbi.nlm.nih.gov/42786912/",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "",
+      "description": "The Clinical journal of pain （Clin J Pain） 作者：Yu CWG, Bhatia V, Chandel S 等",
+      "published_date": "2026-09-25",
+      "collected_date": "2026-09-29",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（PubMed 学术文献（美国国家医学图书馆））",
+      "review_date": "2026-09-29",
+      "risk_level": "educational",
+      "risk_note": null
     }
   ]
 }
