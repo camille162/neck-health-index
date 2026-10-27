@@ -785,6 +785,62 @@
       "review_date": "2026-10-19",
       "risk_level": "educational",
       "risk_note": null
+    },
+    {
+      "id": "cand_pubmed_nlm_qzyicb",
+      "title": "Therapeutic Exercise for Chronic Whiplash-Associated Disorders: A Systematic Review of Randomized Controlled Trials on P",
+      "content_type": "article",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "PubMed 学术文献（美国国家医学图书馆）",
+      "source_type": "government",
+      "source_url": "https://pubmed.ncbi.nlm.nih.gov/42929993/",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "",
+      "description": "Diseases (Basel, Switzerland) （Diseases） 作者：Ferlito R, Lanza G, Testa G 等",
+      "published_date": "2026-10-02",
+      "collected_date": "2026-10-27",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（PubMed 学术文献（美国国家医学图书馆））",
+      "review_date": "2026-10-27",
+      "risk_level": "educational",
+      "risk_note": null
+    },
+    {
+      "id": "cand_pubmed_nlm_1x53n2v",
+      "title": "Effects of exercise-induced hypoalgesia on pressure pain threshold in patients with chronic musculoskeletal pain: A syst",
+      "content_type": "article",
+      "action_tags": [
+        "education"
+      ],
+      "action_labels": [
+        "科普"
+      ],
+      "source_name": "PubMed 学术文献（美国国家医学图书馆）",
+      "source_type": "government",
+      "source_url": "https://pubmed.ncbi.nlm.nih.gov/41925114/",
+      "embed_url": null,
+      "embed_allowed": false,
+      "cover_url": "",
+      "description": "PM & R : the journal of injury, function, and rehabilitation （PM R） 作者：Salazar-Méndez J, Benavides-Méndez F, Núñez-Cortés R 等",
+      "published_date": "2026-10-01",
+      "collected_date": "2026-10-27",
+      "view_count": 0,
+      "is_featured": false,
+      "language": "zh",
+      "review_status": "approved",
+      "reviewed_by": "渠道白名单自动收录（PubMed 学术文献（美国国家医学图书馆））",
+      "review_date": "2026-10-27",
+      "risk_level": "educational",
+      "risk_note": null
     }
   ]
 }
